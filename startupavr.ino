@@ -47,6 +47,7 @@ int powerswitch = 0;
 int sendpower = 0;
 const int powerpin = A5;
 byte len;
+int wakeswitch = 0;
 
 #ifdef NBT
 byte NBTpower[] = {0x12F};
@@ -119,7 +120,9 @@ sendpower = analogRead(powerpin); //can probably substitute this for some kind o
     case '1' : {
 #ifdef NBT
     CAN0.sendMsgBuf(NBTpower,len,NBTpowerBuf);
-    CAN0.sendMsgBuf(NBTcase,len,NBTlowercaseBuf);
+    if (wakeswitch==0) 
+      { wakeswitch = 1;
+      }
 #endif
     break;
     }
@@ -128,5 +131,9 @@ sendpower = analogRead(powerpin); //can probably substitute this for some kind o
     CAN0.sendMsgBuf(NBTpower,len,PowerOFFBuf);
 #endif
     }
+  }
+  switch (wakeswitch) {
+    case '0' : break;
+    case '1' : CAN0.sendMsgBuf(NBTcase,len,NBTlowercaseBuf); 
   }
 }
